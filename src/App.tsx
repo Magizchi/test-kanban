@@ -1,32 +1,85 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import Columns from '@components/organisms/Columns';
+import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { useEffect } from 'react';
+import { KanbanColumn, KanbanItem } from '@models/todos';
+import { useItemListContext } from '@contexts/item.context';
+
+const listCard: KanbanItem[] = [
+  {
+    id: 0,
+    title: 'Title',
+    description: 'description ',
+    cost: 50,
+    status: 'todo',
+    updateMode: false,
+  },
+  {
+    id: 1,
+    title: 'Title 2',
+    description: 'description 2',
+    cost: 50,
+    status: 'todo',
+    updateMode: false,
+  },
+  {
+    id: 2,
+    title: 'Title 3',
+    description: 'description 3',
+    cost: 50,
+    status: 'done',
+    updateMode: false,
+  },
+];
+
+const ColumnsType: KanbanColumn[] = [
+  {
+    status: 'todo',
+    label: 'To-Do',
+  },
+  {
+    status: 'in_progress',
+    label: 'In Progress',
+  },
+  {
+    status: 'done',
+    label: 'Review Ready',
+  },
+];
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { items, setItems } = useItemListContext();
+
+  const handleDradEnd = (dnd: DragEndEvent) => {
+    const { active, over } = dnd;
+
+    if (!over) return;
+    const itemId = active.id as number;
+    const newStatus = over.id as KanbanItem['status'];
+
+    setItems(() =>
+      items.map((item) =>
+        item.id === itemId ? { ...item, status: newStatus } : item,
+      ),
+    );
+  };
+
+  useEffect(() => {
+    setItems(listCard);
+  }, []);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <section className="container mx-auto flex h-screen items-center justify-center gap-x-5">
+        <DndContext onDragEnd={handleDradEnd}>
+          {ColumnsType.map((column) => (
+            <Columns
+              key={column.status}
+              column={column}
+              data={items.filter((item) => item.status === column.status)}
+            />
+          ))}
+        </DndContext>
+      </section>
     </>
   );
 }
