@@ -4,6 +4,7 @@ import { KanbanItem } from '@models/todos';
 import { Icon } from '@iconify/react';
 import { useItemListContext } from '@contexts/item.context';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import Button from '@components/atoms/Button';
 
 type CardProps = KanbanItem;
 
@@ -13,7 +14,7 @@ type Inputs = {
 };
 
 const Columns: FunctionComponent<CardProps> = ({
-  description = 'default description',
+  description,
   id,
   title,
   updateMode,
@@ -24,11 +25,7 @@ const Columns: FunctionComponent<CardProps> = ({
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: id,
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>
     patchItem({ ...data, id, updateMode, cost, status });
@@ -41,52 +38,49 @@ const Columns: FunctionComponent<CardProps> = ({
 
   return (
     <article className="group relative" style={style}>
-      <div className="absolute top-0 right-3 hidden gap-2 p-1 group-hover:flex">
-        <button
-          className="cursor-pointer"
+      <div className="absolute top-1 right-1 hidden gap-1 p-1 group-hover:flex">
+        <Button
           onClick={() => {
             removeItem(id);
           }}
         >
           <Icon icon="ri:delete-bin-6-fill" />
-        </button>
-        <button
-          className="cursor-pointer"
+        </Button>
+        <Button
           onClick={() => {
             allowUpdate(id);
           }}
         >
           <Icon icon="ri:pencil-fill" />
-        </button>
+        </Button>
       </div>
       <div
         ref={setNodeRef}
         {...attributes}
         {...listeners}
-        className="mx-2 cursor-grab rounded-lg border border-indigo-700 p-2 hover:bg-indigo-400"
+        className="cursor-grab rounded-lg border border-gray-200 p-2 shadow hover:bg-gray-100"
       >
         {updateMode ? (
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-2"
+          >
             <input
-              placeholder="Title"
-              className="border border-gray-200"
+              placeholder="Titre"
+              className="border border-gray-200 p-1 ring-gray-500 focus:outline-none"
               defaultValue={title}
               {...register('title', { required: true })}
             />
-            <input
-              placeholder="Title"
-              className="border border-gray-200"
+            <textarea
+              placeholder="Describe yourself here..."
+              className="h-24 w-full resize-none border border-gray-200 p-1 ring-gray-500 focus:outline-none"
               defaultValue={description}
               {...register('description', { required: true })}
             />
-            {errors.description && <span>This field is required</span>}
-            <input type="submit" />
           </form>
         ) : (
           <>
-            <div className="flex items-center justify-between">
-              <h2>{title}</h2>
-            </div>
+            <h2>{title}</h2>
             <div>{description}</div>
           </>
         )}
