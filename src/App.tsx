@@ -65,20 +65,23 @@ function App() {
 
   useEffect(() => {
     setItems(listCard);
-  }, []);
+  }, [setItems]);
 
   return (
     <>
-      <section className="container mx-auto flex h-screen items-center justify-center gap-x-5">
-        <DndContext onDragEnd={handleDradEnd}>
-          {ColumnsType.map((column) => (
-            <Columns
-              key={column.status}
-              column={column}
-              data={items.filter((item) => item.status === column.status)}
-            />
-          ))}
-        </DndContext>
+      <section className="m-10 flex flex-col gap-10">
+        <h1 className="text-5xl font-bold">KANBAN</h1>
+        <div className="flex gap-x-5">
+          <DndContext onDragEnd={handleDradEnd}>
+            {ColumnsType.map((column) => (
+              <Columns
+                key={column.status}
+                column={column}
+                data={items.filter((item) => item.status === column.status)}
+              />
+            ))}
+          </DndContext>
+        </div>
       </section>
     </>
   );
