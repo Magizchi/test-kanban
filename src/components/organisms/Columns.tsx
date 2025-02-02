@@ -4,6 +4,7 @@ import Card from '@components/organisms/Card';
 import { useDroppable } from '@dnd-kit/core';
 import { KanbanColumn, KanbanItem } from '@models/todos';
 import { useItemListContext } from '@contexts/item.context';
+import Badge from '@components/atoms/Badge';
 
 interface ColumnsProps {
   column: KanbanColumn;
@@ -17,16 +18,11 @@ const Columns: FunctionComponent<ColumnsProps> = ({ column, data }) => {
     id: column.status,
   });
   return (
-    <div
-      ref={setNodeRef}
-      className="min-h-96 w-96 rounded-lg border border-indigo-700"
-    >
-      <div className="flex items-center justify-between rounded-t-lg bg-indigo-300 px-2 py-4">
-        <div className="flex items-center gap-x-3">
+    <div ref={setNodeRef} className="min-h-96 w-96 rounded-lg">
+      <div className="flex items-center justify-between rounded-lg bg-gray-200 px-2 py-4">
+        <div className="flex items-center gap-3">
           <h2>{column.label}</h2>
-          <span className="h-5 w-5 rounded-full bg-indigo-200 text-center text-sm text-indigo-700">
-            {data.length}
-          </span>
+          <Badge>{data.length}</Badge>
         </div>
         <div className="flex gap-x-3">
           <button
