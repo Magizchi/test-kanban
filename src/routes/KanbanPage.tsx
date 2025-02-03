@@ -3,33 +3,7 @@ import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { useEffect } from 'react';
 import { KanbanColumn, KanbanItem } from '@models/todos';
 import { useItemListContext } from '@contexts/item.context';
-
-const listCard: KanbanItem[] = [
-  {
-    id: 0,
-    title: 'Title',
-    description: 'description ',
-    cost: 50,
-    status: 'todo',
-    updateMode: false,
-  },
-  {
-    id: 1,
-    title: 'Title 2',
-    description: 'description 2',
-    cost: 50,
-    status: 'todo',
-    updateMode: false,
-  },
-  {
-    id: 2,
-    title: 'Title 3',
-    description: 'description 3',
-    cost: 50,
-    status: 'done',
-    updateMode: false,
-  },
-];
+import todos from '@mocks/todos';
 
 const ColumnsType: KanbanColumn[] = [
   {
@@ -46,7 +20,7 @@ const ColumnsType: KanbanColumn[] = [
   },
 ];
 
-function App() {
+const KanbanPage = () => {
   const { items, setItems } = useItemListContext();
 
   const handleDradEnd = (dnd: DragEndEvent) => {
@@ -64,7 +38,7 @@ function App() {
   };
 
   useEffect(() => {
-    setItems(listCard);
+    return setItems(todos);
   }, [setItems]);
 
   return (
@@ -85,6 +59,6 @@ function App() {
       </section>
     </>
   );
-}
+};
 
-export default App;
+export default KanbanPage;
