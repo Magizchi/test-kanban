@@ -27,7 +27,9 @@
     "paths": {
       "@models/*": ["models/*"],
       "@components/*": ["components/*"],
-      "@contexts/*": ["contexts/*"]
+      "@contexts/*": ["contexts/*"],
+      "@routes/*": ["routes/*"],
+      "@mocks/*": ["mocks/*"]
     }
   },
   "include": ["src"]
