@@ -27,8 +27,9 @@ const Columns: FunctionComponent<CardProps> = ({
   });
   const { register, handleSubmit } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
-    patchItem({ ...data, id, updateMode, cost, status });
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    return patchItem({ ...data, id, updateMode: false, cost, status });
+  };
 
   const style = transform
     ? {
@@ -37,47 +38,52 @@ const Columns: FunctionComponent<CardProps> = ({
     : undefined;
 
   return (
-    <article className="group relative" style={style}>
-      <div className="absolute top-1 right-1 hidden gap-1 p-1 group-hover:flex">
-        <Button
-          onClick={() => {
-            removeItem(id);
-          }}
-        >
+    <article className="group relative" ref={setNodeRef} style={style}>
+      <div className="absolute top-1 right-1 z-10 hidden gap-1 p-1 group-hover:flex">
+        <Button onClick={() => removeItem(id)}>
           <Icon icon="ri:delete-bin-6-fill" />
         </Button>
-        <Button
-          onClick={() => {
-            allowUpdate(id);
-          }}
-        >
-          <Icon icon="ri:pencil-fill" />
-        </Button>
+        {updateMode && (
+          <Button type="submit" form="form">
+            <Icon icon="ri:check-fill" />
+          </Button>
+        )}
+        {!updateMode && (
+          <Button type="button" onClick={() => allowUpdate(id)}>
+            <Icon icon="ri:pencil-fill" />
+          </Button>
+        )}
       </div>
-      <div
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        className="cursor-grab rounded-lg border border-gray-200 p-2 shadow hover:bg-gray-100"
-      >
+      <div className="cursor-grab rounded-lg border border-gray-200 p-2 shadow hover:bg-gray-100">
+        {!updateMode && (
+          <div
+            className="absolute top-0 left-0 z-0 h-full w-full"
+            {...attributes}
+            {...listeners}
+          />
+        )}
         {updateMode ? (
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-2"
-          >
-            <input
-              placeholder="Titre"
-              className="border border-gray-200 p-1 ring-gray-500 focus:outline-none"
-              defaultValue={title}
-              {...register('title', { required: true })}
-            />
-            <textarea
-              placeholder="Describe yourself here..."
-              className="h-24 w-full resize-none border border-gray-200 p-1 ring-gray-500 focus:outline-none"
-              defaultValue={description}
-              {...register('description', { required: true })}
-            />
-          </form>
+          <>
+            <form
+              id="form"
+              onSubmit={handleSubmit(onSubmit)}
+              className="z-50 flex flex-col gap-2"
+            >
+              <input
+                type="text"
+                placeholder="Titre"
+                className="text-indenrt p-1ring-gray-500 border border-gray-200 focus:outline-none"
+                defaultValue={title}
+                {...register('title', { required: true })}
+              />
+              <textarea
+                placeholder="Describe yourself here..."
+                className="h-24 w-full resize-none border border-gray-200 p-1 ring-gray-500 focus:outline-none"
+                defaultValue={description}
+                {...register('description', { required: true })}
+              />
+            </form>
+          </>
         ) : (
           <>
             <h2>{title}</h2>
