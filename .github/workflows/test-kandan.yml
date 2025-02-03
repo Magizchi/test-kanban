@@ -1,0 +1,40 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Packages
+        run: npm install
+
+      - name: Build App
+        run: npm run build
+
+      - name: Install Package for production
+        run: npm install --omit=dev
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: unnecessary
+
+      - name: Adding Known Hosts
+        run: ssh-keyscan -p ${{ secrets.PORT }} -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with rsync Build
+        run: rsync -avz -e "ssh -p ${{ secrets.PORT }}" dist/ ${{ secrets.USER }}@${{ secrets.HOST }}:/etc/var/www/kanban/dist
+
+      - name: Deploy NodeModule
+        run: rsync -avz -e "ssh -p ${{ secrets.PORT }}" node_modules/ ${{ secrets.USER }}@${{ secrets.HOST }}:/etc/var/www/kanban/node_modules
