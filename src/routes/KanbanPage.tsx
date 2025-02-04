@@ -1,7 +1,7 @@
 import Columns from '@components/organisms/Columns';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { useEffect } from 'react';
-import { KanbanColumn, KanbanItem } from '@models/todos';
+import { KanbanColumn, KanbanItem, KanbanItemSchema } from '@models/todos';
 import { useItemListContext } from '@contexts/item.context';
 import todos from '@mocks/todos';
 
@@ -23,6 +23,16 @@ const ColumnsType: KanbanColumn[] = [
 const KanbanPage = () => {
   const { items, setItems } = useItemListContext();
 
+  const fetchTasks = () => {
+    // fetch tasks
+    const { success, data } = KanbanItemSchema.array().safeParse(todos);
+    if (!success) {
+      // Toast Error
+      return [];
+    }
+    setItems(data);
+  };
+
   const handleDradEnd = (dnd: DragEndEvent) => {
     const { active, over } = dnd;
 
@@ -38,8 +48,8 @@ const KanbanPage = () => {
   };
 
   useEffect(() => {
-    return setItems(todos);
-  }, [setItems]);
+    fetchTasks();
+  }, []);
 
   return (
     <>
